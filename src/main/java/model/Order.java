@@ -8,6 +8,10 @@ public class Order {
     private ItemType itemType;
     private int quantity;
 
+    public Order() {
+
+    }
+
     public Order(long id, User user, ItemType itemType, int quantity) {
         this.id = id;
         this.user = user;

@@ -1,18 +1,43 @@
 package org.example.jms;
 
+import model.ItemType;
 import model.Order;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Receiver {
 
-    private static final Logger logger = LoggerFactory.getLogger(Receiver.class);
+    @Value("${threshold.volume}")
+    private int volumeThreshold;
+    @Value("${threshold.quantity}")
+    private int quantityThreshold;
+
+    private int orderedVolume;
+
+    private final JmsTemplate jmsTemplate;
+
+    public Receiver(JmsTemplate jmsTemplate) {
+        this.jmsTemplate = jmsTemplate;
+    }
 
     @JmsListener(destination = "orders")
     public void receiveOrder(Order order) {
-        logger.info("Order received: " + order);
+        if (ItemType.COUNTABLE_ITEM.equals(order.getItemType())) {
+            if (order.getQuantity() <= quantityThreshold) {
+                jmsTemplate.convertAndSend("orders.accepted.quantity", order);
+                return;
+            }
+            jmsTemplate.convertAndSend("orders.rejected.quantity", order);
+        } else {
+            if (order.getQuantity() + orderedVolume <= volumeThreshold) {
+                orderedVolume += order.getQuantity();
+                jmsTemplate.convertAndSend("orders.accepted.quantity", order);
+                return;
+            }
+            jmsTemplate.convertAndSend("orders.rejected.volume", order);
+        }
     }
 }
