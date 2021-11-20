@@ -13,19 +13,13 @@
     <groupId>org.example</groupId>
     <artifactId>jms-module</artifactId>
     <packaging>pom</packaging>
+
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>order-creator</module>
-        <module>order-receiver</module>
+        <module>order-processor</module>
+        <module>log-management</module>
     </modules>
-
-        <dependencies>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <version>2.8.9</version>
-            </dependency>
-        </dependencies>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

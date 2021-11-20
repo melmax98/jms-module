@@ -34,7 +34,7 @@ public class Receiver {
         } else {
             if (order.getQuantity() + orderedVolume <= volumeThreshold) {
                 orderedVolume += order.getQuantity();
-                jmsTemplate.convertAndSend("orders.accepted.quantity", order);
+                jmsTemplate.convertAndSend("orders.accepted.volume", order);
                 return;
             }
             jmsTemplate.convertAndSend("orders.rejected.volume", order);
