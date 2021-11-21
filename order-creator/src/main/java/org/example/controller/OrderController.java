@@ -1,8 +1,8 @@
 package org.example.controller;
 
 
+import org.example.jms.Sender;
 import org.example.model.Order;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,14 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class OrderController {
 
-    private final JmsTemplate jmsTemplate;
+    private final Sender sender;
 
-    public OrderController(JmsTemplate jmsTemplate) {
-        this.jmsTemplate = jmsTemplate;
+    public OrderController(Sender sender) {
+        this.sender = sender;
     }
+
 
     @PostMapping("/order")
     public void createOrder(@RequestBody Order order) {
-        jmsTemplate.convertAndSend("orders", order);
+        sender.send("orders", order);
     }
 }
