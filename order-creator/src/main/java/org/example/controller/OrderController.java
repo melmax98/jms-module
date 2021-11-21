@@ -1,7 +1,7 @@
 package org.example.controller;
 
 
-import model.Order;
+import org.example.model.Order;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

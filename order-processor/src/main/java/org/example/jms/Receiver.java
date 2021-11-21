@@ -1,7 +1,7 @@
 package org.example.jms;
 
-import model.ItemType;
-import model.Order;
+import org.example.model.ItemType;
+import org.example.model.Order;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;

@@ -1,6 +1,6 @@
 package org.example.jms;
 
-import model.Order;
+import org.example.model.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.annotation.JmsListener;
