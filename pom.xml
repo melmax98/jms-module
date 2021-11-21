@@ -19,6 +19,7 @@
         <module>order-creator</module>
         <module>order-processor</module>
         <module>log-management</module>
+        <module>common</module>
     </modules>
 
     <properties>
