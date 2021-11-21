@@ -7,35 +7,45 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.connection.CachingConnectionFactory;
+import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.jms.ConnectionFactory;
 import java.util.Collections;
 
 @EnableJms
+@EnableTransactionManagement
 @Configuration
 public class JmsConfiguration {
     @Value("${spring.activemq.broker-url}")
     private String brokerUrl;
 
     @Bean
-    public DefaultJmsListenerContainerFactory jmsContainerFactory() {
+    public DefaultJmsListenerContainerFactory jmsContainerFactory(
+            ConnectionFactory connectionFactory,
+            MessageConverter messageConverter,
+            PlatformTransactionManager platformTransactionManager
+    ) {
         DefaultJmsListenerContainerFactory containerFactory = new DefaultJmsListenerContainerFactory();
         containerFactory.setPubSubDomain(true);
-        containerFactory.setConnectionFactory(connectionFactory());
-        containerFactory.setMessageConverter(jacksonJmsMessageConverter());
+        containerFactory.setConnectionFactory(connectionFactory);
+        containerFactory.setMessageConverter(messageConverter);
+        containerFactory.setTransactionManager(platformTransactionManager);
         return containerFactory;
     }
 
     @Bean
-    public CachingConnectionFactory connectionFactory() {
-        CachingConnectionFactory cachConnectionFactory = new CachingConnectionFactory();
+    public ConnectionFactory connectionFactory() {
+        CachingConnectionFactory cacheConnectionFactory = new CachingConnectionFactory();
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
         connectionFactory.setBrokerURL(brokerUrl);
         connectionFactory.setTrustedPackages(Collections.singletonList("org.example"));
-        cachConnectionFactory.setTargetConnectionFactory(connectionFactory);
-        return cachConnectionFactory;
+        cacheConnectionFactory.setTargetConnectionFactory(connectionFactory);
+        return cacheConnectionFactory;
     }
 
     @Bean
@@ -44,5 +54,10 @@ public class JmsConfiguration {
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
         return converter;
+    }
+
+    @Bean
+    public PlatformTransactionManager platformTransactionManager(ConnectionFactory connectionFactory) {
+        return new JmsTransactionManager(connectionFactory);
     }
 }
